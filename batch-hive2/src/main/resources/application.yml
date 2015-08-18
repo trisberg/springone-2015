@@ -1,0 +1,6 @@
+tweets:
+  hiveUrl: jdbc:hive2://borneo:10000
+spring:
+  batch:
+    job:
+      enabled: false
