@@ -1,0 +1,12 @@
+spring:
+  batch:
+    job:
+      enabled: false
+  hadoop:
+    fsUri: hdfs://borneo:8020
+    resourceManagerHost: borneo
+demo:
+  inputDir: /demo/hashtags/input
+  inputFileName: tweets.dat
+  inputLocalDir: data
+  outputDir: /demo/hashtags/output
