@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    stream:
+      bindings:
+        input: hdfs.data
+  hadoop:
+    fsUri: hdfs://borneo:8020
