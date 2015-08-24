@@ -3,4 +3,4 @@ spring:
     fsUri: hdfs://borneo:8020
 tweets:
   fileName: test.dat
-  basePath: /test/tweets
+  basePath: /demo/tweets
