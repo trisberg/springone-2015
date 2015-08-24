@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.data.hadoop.batch.scripting.ScriptTasklet;
 import org.springframework.data.hadoop.batch.spark.SparkYarnTasklet;
 import org.springframework.data.hadoop.scripting.HdfsScriptRunner;
@@ -36,30 +34,29 @@ public class SparkYarnConfiguration {
 	String outputDir;
 	
 	@Bean
-	public Job tweetInfluencers(JobBuilderFactory jobs, Step initScript, Step sparkInfluencers) throws Exception {
+	Job tweetInfluencers(JobBuilderFactory jobs, Step initScript, Step sparkInfluencers) throws Exception {
 	    return jobs.get("TweetInfluencers")
-	    		.flow(initScript)
+	    		.start(initScript)
 	    		.next(sparkInfluencers)
-	    		.end()
 	    		.build();
 	}
 	 
 	@Bean
-    public Step initScript(StepBuilderFactory steps, Tasklet scriptTasklet) throws Exception {
+    Step initScript(StepBuilderFactory steps, Tasklet scriptTasklet) throws Exception {
 		return steps.get("initScript")
     		.tasklet(scriptTasklet)
             .build();
     }
 
 	@Bean
-    public Step sparkInfluencers(StepBuilderFactory steps, Tasklet sparkInfluencersTasklet) throws Exception {
+    Step sparkInfluencers(StepBuilderFactory steps, Tasklet sparkInfluencersTasklet) throws Exception {
 		return steps.get("sparkInfluencers")
     		.tasklet(sparkInfluencersTasklet)
             .build();
     }
 
 	@Bean
-	public ScriptTasklet scriptTasklet(HdfsScriptRunner scriptRunner) {
+	ScriptTasklet scriptTasklet(HdfsScriptRunner scriptRunner) {
 		ScriptTasklet scriptTasklet = new ScriptTasklet();
 		scriptTasklet.setScriptCallback(scriptRunner);
 		return scriptTasklet;
@@ -87,7 +84,7 @@ public class SparkYarnConfiguration {
 	}
 
 	@Bean
-	public SparkYarnTasklet sparkInfluencersTasklet() throws Exception {
+	SparkYarnTasklet sparkInfluencersTasklet() throws Exception {
 		SparkYarnTasklet sparkTasklet = new SparkYarnTasklet();
 		sparkTasklet.setSparkAssemblyJar(
 				"hdfs:///app/spark/spark-assembly-1.4.1-hadoop2.6.0.jar");
