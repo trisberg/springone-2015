@@ -29,5 +29,4 @@ public class BatchHive2Application implements CommandLineRunner {
 		jobLauncher.run(tweetInfluencers, new JobParametersBuilder().toJobParameters());
 	}
     
-    
 }
