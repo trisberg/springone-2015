@@ -34,10 +34,10 @@ public class SparkYarnConfiguration {
 	String outputDir;
 	
 	@Bean
-	Job tweetInfluencers(JobBuilderFactory jobs, Step initScript, Step sparkInfluencers) throws Exception {
-	    return jobs.get("TweetInfluencers")
+	Job tweetInfluencers(JobBuilderFactory jobs, Step initScript, Step sparkTopHashtags) throws Exception {
+	    return jobs.get("TweetTopHashtags")
 	    		.start(initScript)
-	    		.next(sparkInfluencers)
+	    		.next(sparkTopHashtags)
 	    		.build();
 	}
 	 
@@ -49,9 +49,9 @@ public class SparkYarnConfiguration {
     }
 
 	@Bean
-    Step sparkInfluencers(StepBuilderFactory steps, Tasklet sparkInfluencersTasklet) throws Exception {
-		return steps.get("sparkInfluencers")
-    		.tasklet(sparkInfluencersTasklet)
+    Step sparkTopHashtags(StepBuilderFactory steps, Tasklet sparkTopHashtagsTasklet) throws Exception {
+		return steps.get("sparkTopHashtags")
+    		.tasklet(sparkTopHashtagsTasklet)
             .build();
     }
 
@@ -84,7 +84,7 @@ public class SparkYarnConfiguration {
 	}
 
 	@Bean
-	SparkYarnTasklet sparkInfluencersTasklet() throws Exception {
+	SparkYarnTasklet sparkTopHashtagsTasklet() throws Exception {
 		SparkYarnTasklet sparkTasklet = new SparkYarnTasklet();
 		sparkTasklet.setSparkAssemblyJar(
 				"hdfs:///app/spark/spark-assembly-1.4.1-hadoop2.6.0.jar");

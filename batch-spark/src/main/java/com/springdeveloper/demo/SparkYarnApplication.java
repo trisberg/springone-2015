@@ -17,7 +17,7 @@ public class SparkYarnApplication implements CommandLineRunner {
 	JobLauncher jobLauncher;
 	
 	@Autowired
-	Job tweetInfluencers;
+	Job tweetTopHashtags;
 	
     public static void main(String[] args) {
         SpringApplication.run(SparkYarnApplication.class, args);
@@ -26,7 +26,7 @@ public class SparkYarnApplication implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 		System.out.println("RUNNING ...");
-		jobLauncher.run(tweetInfluencers, new JobParametersBuilder().toJobParameters());
+		jobLauncher.run(tweetTopHashtags, new JobParametersBuilder().toJobParameters());
 	}
     
     
