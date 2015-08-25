@@ -19,8 +19,6 @@ package com.springdeveloper.demo.cloud;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import javax.validation.constraints.Pattern;
-
 /**
  * Used to configure the Hdfs Writer module options that are related to writing to Hdfs.
  *
@@ -44,11 +42,6 @@ public class HdfsWriterProperties {
 	 * the base filename extension to use for the created files
 	 */
 	private String fileExtension = "txt";
-
-	/**
-	 * compression codec alias name (gzip, snappy, bzip2, lzo, or slzo)
-	 */
-	private String codec = null;
 
 	/**
 	 * threshold in bytes when file will be automatically rolled over.

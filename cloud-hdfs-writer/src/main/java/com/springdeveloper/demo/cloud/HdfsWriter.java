@@ -35,7 +35,7 @@ public class HdfsWriter {
 	DataStoreWriter<String> dataStoreWriter;
 
 	@Autowired
-	public void setDataStoreWriter(DataStoreWriter dataStoreWriter) {
+	public void setDataStoreWriter(DataStoreWriter<String> dataStoreWriter) {
 		this.dataStoreWriter = dataStoreWriter;
 	}
 
