@@ -29,6 +29,8 @@ import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -43,6 +45,8 @@ import org.springframework.data.hadoop.hive.HiveScript;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 
 @Configuration
 public class BatchHive2Configuration {
@@ -94,11 +98,11 @@ public class BatchHive2Configuration {
 	}
 
 	@Bean
-	Tasklet resultsTasklet(DataSource dataSource) {
+	Tasklet resultsTasklet(@Qualifier("exportDataSource") DataSource exportDataSource) {
 		return new Tasklet() {
 			@Override
 			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(exportDataSource);
 				System.out.println("Results:");
 				List<Map<String, Object>> results = jdbcTemplate.queryForList("select * from twitter_influencers");
 				for (Map<String, Object> r : results) {
@@ -120,9 +124,9 @@ public class BatchHive2Configuration {
 	@Bean
 	ItemReader<Map<String, Object>> hdfsFileReader(HdfsResourceLoader resourceLoader, LineMapper<Map<String, Object>> lineMapper) throws IOException {
 		MultiResourceItemReader<Map<String, Object>> multiReader = new MultiResourceItemReader<>();
-		FlatFileItemReader<Map<String, Object>> itemReader = new FlatFileItemReader<>();
 		Resource[] resources = resourceLoader.getResources("/demo/influencers/*");
 		multiReader.setResources(resources);	
+		FlatFileItemReader<Map<String, Object>> itemReader = new FlatFileItemReader<>();
 		itemReader.setLineMapper(lineMapper);
 		multiReader.setDelegate(itemReader);
 		return multiReader;
@@ -133,7 +137,8 @@ public class BatchHive2Configuration {
 		return new HdfsResourceLoader(hadoopConfiguration);
 	}
 	
-	@Bean LineMapper<Map<String, Object>> lineMapper() {
+	@Bean 
+	LineMapper<Map<String, Object>> lineMapper() {
 		return new LineMapper<Map<String, Object>>() {
 			@Override
 			public Map<String, Object> mapLine(String line, int lineNum) throws Exception {
@@ -150,9 +155,9 @@ public class BatchHive2Configuration {
 	}
 	
 	@Bean
-	ItemWriter<Map<String, Object>> jdbcWriter(DataSource dataSource) {
+	ItemWriter<Map<String, Object>> jdbcWriter(@Qualifier("exportDataSource") DataSource exportDataSource) {
 		JdbcBatchItemWriter<Map<String, Object>> writer = new JdbcBatchItemWriter<>();
-		writer.setDataSource(dataSource);
+		writer.setDataSource(exportDataSource);
 		writer.setSql("INSERT INTO twitter_influencers (user_name, followers) VALUES (:user_name, :followers)");
 		return writer;
 	}
@@ -163,9 +168,9 @@ public class BatchHive2Configuration {
 	}
 	
 	@Bean
-	HiveClientFactory hiveClientFactory(@Qualifier("hiveDataSource") DataSource dataSource) throws Exception {
+	HiveClientFactory hiveClientFactory(@Qualifier("hiveDataSource") DataSource hiveDataSource) throws Exception {
 		HiveClientFactoryBean hiveClientFactoryBean = new HiveClientFactoryBean();
-		hiveClientFactoryBean.setHiveDataSource(dataSource);
+		hiveClientFactoryBean.setHiveDataSource(hiveDataSource);
 		hiveClientFactoryBean.afterPropertiesSet();
 		return hiveClientFactoryBean.getObject();
 	}
@@ -179,8 +184,24 @@ public class BatchHive2Configuration {
 	@Primary
 	DataSource batchDataSource() {
 		return new EmbeddedDatabaseBuilder()
-				.setName("mytest")
-				.addScripts("influencers-schema.sql")
+				.setName("jobs")
 				.build();
 	}
+
+	@Bean
+	public DataSourceInitializer exportDataSourceInitializer(@Qualifier("exportDataSource") DataSource exportDataSource) {
+		ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
+		resourceDatabasePopulator.addScript(new ClassPathResource("influencers-schema.sql"));
+		DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
+		dataSourceInitializer.setDataSource(exportDataSource);
+		dataSourceInitializer.setDatabasePopulator(resourceDatabasePopulator);
+		return dataSourceInitializer;
+	}
+
+    @Bean
+	@ConfigurationProperties(prefix="export.jdbc")
+	public DataSource exportDataSource() {
+	    return DataSourceBuilder.create().build();
+	}
+	
 }

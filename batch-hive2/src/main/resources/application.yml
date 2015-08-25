@@ -1,8 +1,21 @@
-tweets:
-  hiveUrl: jdbc:hive2://borneo:10000
 spring:
   batch:
     job:
       enabled: false
   hadoop:
     fsUri: hdfs://borneo:8020
+tweets:
+  hiveUrl: jdbc:hive2://borneo:10000
+export:
+  jdbc:
+    # Choose MySQL or HSQLDB
+    #MySQL
+    #driverClassName: com.mysql.jdbc.Driver
+    #url: jdbc:mysql://localhost:3306/test
+    #username: spring
+    #password: spring
+    #HSQLDB 
+    driverClassName: org.hsqldb.jdbcDriver
+    url: jdbc:hsqldb:hsql://borneo:9001/test
+    username: sa
+    password: 
