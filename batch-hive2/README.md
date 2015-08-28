@@ -1,7 +1,7 @@
-boot-ingest
+batch-hive2
 ===========
 
-Spring Boot app for HDFS ingestion
+Spring Boot app for running HiveServer2 batch tasklet
 
 ### Build with:
 
@@ -13,5 +13,5 @@ Follow instructions for the `SpringOne-2015-Edition` here [https://github.com/tr
 
 ### Run local with:
 
-    java -jar target/boot-ingest-0.0.1-SNAPSHOT.jar
+    java -jar target/batch-hive2-0.0.1-SNAPSHOT.jar
 

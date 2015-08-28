@@ -1,7 +1,7 @@
-boot-ingest
+batch-spark
 ===========
 
-Spring Boot app for HDFS ingestion
+Spring Boot app for running Spark on YARN batch tasklet
 
 ### Build with:
 
@@ -13,5 +13,5 @@ Follow instructions for the `SpringOne-2015-Edition` here [https://github.com/tr
 
 ### Run local with:
 
-    java -jar target/boot-ingest-0.0.1-SNAPSHOT.jar
+    java -jar target/batch-spark-0.0.1-SNAPSHOT.jar
 
