@@ -13,5 +13,5 @@ Follow instructions for the `SpringOne-2015-Edition` here [https://github.com/tr
 
 ### Run local with:
 
-    java -jar target/boot-ingest-0.0.1-SNAPSHOT.jar
+    java -jar target/boot-ingest-0.0.1-SNAPSHOT.jar --tweets.fileName=data/tweets.dat
 
