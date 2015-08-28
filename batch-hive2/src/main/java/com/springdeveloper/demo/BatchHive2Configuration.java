@@ -17,6 +17,7 @@ import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.DefaultBatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.item.ItemReader;
@@ -33,6 +34,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -98,7 +100,7 @@ public class BatchHive2Configuration {
 	}
 
 	@Bean
-	Tasklet resultsTasklet(@Qualifier("exportDataSource") DataSource exportDataSource) {
+	Tasklet resultsTasklet(@Qualifier("exportDataSource") final DataSource exportDataSource) {
 		return new Tasklet() {
 			@Override
 			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
@@ -122,6 +124,7 @@ public class BatchHive2Configuration {
 	}
 
 	@Bean
+	@StepScope
 	ItemReader<Map<String, Object>> hdfsFileReader(HdfsResourceLoader resourceLoader, LineMapper<Map<String, Object>> lineMapper) throws IOException {
 		MultiResourceItemReader<Map<String, Object>> multiReader = new MultiResourceItemReader<>();
 		Resource[] resources = resourceLoader.getResources("/demo/influencers/*");

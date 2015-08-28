@@ -5,3 +5,5 @@ spring:
         input: hdfs.data
   hadoop:
     fsUri: hdfs://borneo:8020
+  redis:
+    host: borneo
