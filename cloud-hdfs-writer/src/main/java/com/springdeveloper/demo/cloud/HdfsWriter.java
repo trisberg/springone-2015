@@ -17,19 +17,19 @@
 package com.springdeveloper.demo.cloud;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.annotation.EnableModule;
-import org.springframework.cloud.stream.annotation.Sink;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.data.hadoop.store.DataStoreWriter;
 import org.springframework.integration.annotation.ServiceActivator;
 
 import java.io.IOException;
 
 /**
- * A sink that can be used to insert data into HDFS.
+ * A spring-cloud-stream sink that can be used to insert data into HDFS.
  *
  * @author Thomas Risberg
  */
-@EnableModule(Sink.class)
+@EnableBinding(Sink.class)
 public class HdfsWriter {
 
 	DataStoreWriter<String> dataStoreWriter;

@@ -13,13 +13,14 @@ Follow instructions for the `SpringOne-2015-Edition` here [https://github.com/tr
 
 ### Run local with:
 
-We need to have Docker configured and running.
-
 ##### start sink with:
     java -jar target/cloud-hdfs-writer-0.0.1-SNAPSHOT.jar
 
-##### start source using Docker (this starts a Spring XD v2 `time-source` module):
-    docker run --add-host=borneo:$(grep 'borneo' /etc/hosts | awk '{print $1}') -p 8080:8080 -e MODULES=org.springframework.cloud.stream.module:time-source:1.0.0.BUILD-SNAPSHOT -e spring_redis_host=borneo -e spring_cloud_stream_bindings_output=hdfs.data springcloud/stream-module-launcher
+##### download the time-source module with:
+    wget http://repo.spring.io/milestone/org/springframework/cloud/stream/module/time-source/1.0.0.M1/time-source-1.0.0.M1-exec.jar
+
+##### start source module::
+    java -jar time-source-1.0.0.M1-exec.jar --server.port=8081 --spring.redis.host=borneo --spring.cloud.stream.bindings.output=hdfs.data
 
 #### Run on Lattice with:
 
@@ -33,3 +34,28 @@ We need to have Lattice configured and running.
 
 ##### start source using Docker (this starts a Spring XD v2 `time-source` module):
     ltc create time springcloud/stream-module-launcher --memory-mb=512 -e MODULES=org.springframework.cloud.stream.module:time-source:1.0.0.BUILD-SNAPSHOT -e spring_profiles_active=cloud -e spring_cloud_stream_bindings_output=hdfs.data
+
+#### Run on Cloud Foundry with:
+
+You need to have an account for Cloud Foundry and also a Hadoop cluster that Cloud Foundry can access over the network.
+
+##### configure redis and hadoop services with (adjust to match your environment):
+    cf create-service rediscloud 30mb redis
+    cf create-user-provided-service hadoop -p '{"fs":{"defaultFS":"hdfs://10.0.0.1:8020"},"yarn":{"resourcemanager":{"host":"10.0.0.2","port":"8050"}}}'
+
+##### start sink with:
+    cf push springone-hdfs -p target/cloud-hdfs-writer-0.0.1-SNAPSHOT.jar --no-start
+    cf bind-service springone-hdfs hadoop
+    cf bind-service springone-hdfs redis
+    cf start springone-hdfs
+
+##### download the time-source module with:
+    wget http://repo.spring.io/milestone/org/springframework/cloud/stream/module/time-source/1.0.0.M1/time-source-1.0.0.M1-exec.jar
+
+##### start source with:
+    cf push springone-time -p time-source-1.0.0.M1-exec.jar --no-start
+    cf bind-service springone-time redis
+    cf set-env springone-time SPRING_CLOUD_STREAM_BINDINGS_OUTPUT hdfs.data
+    cf start springone-time
+
+

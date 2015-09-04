@@ -7,3 +7,10 @@ spring:
     fsUri: hdfs://borneo:8020
   redis:
     host: borneo
+---
+
+spring:
+  profiles: cloud
+  hadoop:
+    fsUri: ${vcap.services.hadoop.credentials.fs.defaultFS:hdfs://localhost:8020}
+---
