@@ -33,6 +33,9 @@ public class SparkYarnConfiguration {
 	@Value("${demo.outputDir}")
 	String outputDir;
 	
+	@Value("${demo.sparkAssembly}")
+	String sparkAssembly;
+	
 	@Bean
 	Job tweetInfluencers(JobBuilderFactory jobs, Step initScript, Step sparkTopHashtags) throws Exception {
 	    return jobs.get("TweetTopHashtags")
@@ -86,8 +89,7 @@ public class SparkYarnConfiguration {
 	@Bean
 	SparkYarnTasklet sparkTopHashtagsTasklet() throws Exception {
 		SparkYarnTasklet sparkTasklet = new SparkYarnTasklet();
-		sparkTasklet.setSparkAssemblyJar(
-				"hdfs:///app/spark/spark-assembly-1.4.1-hadoop2.6.0.jar");
+		sparkTasklet.setSparkAssemblyJar(sparkAssembly);
 		sparkTasklet.setHadoopConfiguration(hadoopConfiguration);
 		sparkTasklet.setAppClass("Hashtags");
 		String jarFile = System.getProperty("user.dir") + "/app/spark-hashtags_2.10-0.1.0.jar";

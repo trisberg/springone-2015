@@ -15,3 +15,4 @@ Follow instructions for the `SpringOne-2015-Edition` here [https://github.com/tr
 
     java -jar target/batch-spark-0.0.1-SNAPSHOT.jar
 
+NOTE: The source for the Spark application is in the `spark` subdirectory of this repository.

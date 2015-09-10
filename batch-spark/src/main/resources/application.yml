@@ -10,3 +10,4 @@ demo:
   inputFileName: tweets.dat
   inputLocalDir: data
   outputDir: /demo/hashtags/output
+  sparkAssembly: hdfs:///app/spark/spark-assembly-1.5.0-hadoop2.6.0.jar

@@ -33,7 +33,7 @@ We need to have Lattice configured and running.
     ltc create hdfs springdeveloper/cloud-hdfs-writer --memory-mb=512 -e spring_profiles_active=cloud -e spring_hadoop_fsUri=hdfs://borneo:8020
 
 ##### start source using Docker (this starts a Spring XD v2 `time-source` module):
-    ltc create time springcloud/stream-module-launcher --memory-mb=512 -e MODULES=org.springframework.cloud.stream.module:time-source:1.0.0.BUILD-SNAPSHOT -e spring_profiles_active=cloud -e spring_cloud_stream_bindings_output=hdfs.data
+    ltc create time springcloud/stream-module-launcher --memory-mb=512 -e MODULES=org.springframework.cloud.stream.module:time-source:1.0.0.M1 -e spring_profiles_active=cloud -e spring_cloud_stream_bindings_output=hdfs.data
 
 #### Run on Cloud Foundry with:
 
