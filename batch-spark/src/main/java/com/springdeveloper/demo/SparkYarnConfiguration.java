@@ -1,5 +1,8 @@
 package com.springdeveloper.demo;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
@@ -9,11 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.hadoop.batch.scripting.ScriptTasklet;
 import org.springframework.data.hadoop.batch.spark.SparkYarnTasklet;
 import org.springframework.data.hadoop.scripting.HdfsScriptRunner;
 import org.springframework.scripting.ScriptSource;
-import org.springframework.scripting.support.StaticScriptSource;
+import org.springframework.scripting.support.ResourceScriptSource;
 
 @Configuration
 public class SparkYarnConfiguration {
@@ -66,22 +70,16 @@ public class SparkYarnConfiguration {
 	}
 
 	@Bean HdfsScriptRunner scriptRunner() {
-		StringBuilder scriptContent = new StringBuilder();
-		scriptContent.append("indir = '" + inputDir + "';\n");
-		scriptContent.append("source = '"+inputLocalDir+"';\n");
-		scriptContent.append("file = '"+inputFileName+"';\n");
-		scriptContent.append("outdir = '"+outputDir +"';\n");
-		scriptContent.append("if (fsh.test(indir)) {\n");
-		scriptContent.append("	fsh.rmr(indir);\n");
-		scriptContent.append("}\n");
-		scriptContent.append("if (fsh.test(outdir)) {\n");
-		scriptContent.append("	fsh.rmr(outdir);\n");
-		scriptContent.append("}\n");
-		scriptContent.append("fsh.copyFromLocal(source+'/'+file, indir+'/'+file);\n");
-		ScriptSource script = new StaticScriptSource(scriptContent.toString());
+		ScriptSource script = new ResourceScriptSource(new ClassPathResource("fileCopy.js"));
 		HdfsScriptRunner scriptRunner = new HdfsScriptRunner();
 		scriptRunner.setConfiguration(hadoopConfiguration);
 		scriptRunner.setLanguage("javascript");
+		Map<String, Object> arguments = new HashMap<>();
+		arguments.put("indir", inputDir);
+		arguments.put("source", inputLocalDir);
+		arguments.put("file", inputFileName);
+		arguments.put("outdir", outputDir);
+		scriptRunner.setArguments(arguments);
 		scriptRunner.setScriptSource(script);
 		return scriptRunner;
 	}
