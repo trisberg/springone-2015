@@ -2,5 +2,5 @@ spring:
   hadoop:
     fsUri: hdfs://borneo:8020
 tweets:
-  fileName: test.dat
+  fileName: data/tweets.dat
   basePath: /demo/tweets
