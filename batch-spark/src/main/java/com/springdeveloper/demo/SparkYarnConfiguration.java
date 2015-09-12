@@ -1,5 +1,6 @@
 package com.springdeveloper.demo;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -90,11 +91,13 @@ public class SparkYarnConfiguration {
 		sparkTasklet.setSparkAssemblyJar(sparkAssembly);
 		sparkTasklet.setHadoopConfiguration(hadoopConfiguration);
 		sparkTasklet.setAppClass("Hashtags");
-		String jarFile = System.getProperty("user.dir") + "/app/spark-hashtags_2.10-0.1.0.jar";
-		sparkTasklet.setAppJar(jarFile);
+		File jarFile = new File(System.getProperty("user.dir") + "/app/spark-hashtags_2.10-0.1.0.jar");
+		sparkTasklet.setAppJar(jarFile.toURI().toString());
 		sparkTasklet.setExecutorMemory("1G");
 		sparkTasklet.setNumExecutors(1);
-		sparkTasklet.setArguments(new String[]{inputDir + "/" + inputFileName, outputDir});
+		sparkTasklet.setArguments(new String[]{
+				hadoopConfiguration.get("fs.defaultFS") + inputDir + "/" + inputFileName, 
+				hadoopConfiguration.get("fs.defaultFS") + outputDir});
 		return sparkTasklet;
 	}
 }
