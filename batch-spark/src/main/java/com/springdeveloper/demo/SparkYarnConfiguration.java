@@ -75,9 +75,9 @@ public class SparkYarnConfiguration {
 		scriptRunner.setConfiguration(hadoopConfiguration);
 		scriptRunner.setLanguage("javascript");
 		Map<String, Object> arguments = new HashMap<>();
-		arguments.put("indir", inputDir);
 		arguments.put("source", inputLocalDir);
 		arguments.put("file", inputFileName);
+		arguments.put("indir", inputDir);
 		arguments.put("outdir", outputDir);
 		scriptRunner.setArguments(arguments);
 		scriptRunner.setScriptSource(script);
