@@ -26,7 +26,7 @@ public class BootIngestConfiguration {
 				Arrays.asList(new FileNamingStrategy[] {
 						new StaticFileNamingStrategy("tweets"),
 						new UuidFileNamingStrategy(),
-						new StaticFileNamingStrategy("dat", ".")}));
+						new StaticFileNamingStrategy("csv", ".")}));
 		writer.setFileNamingStrategy(namingStrategy);
 		return writer;
 	}
