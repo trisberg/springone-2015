@@ -8,6 +8,7 @@ dependency-reduced-pom.xml
 buildNumber.properties
 *.classpath
 *.project
+*.springBeans
 .settings
 .idea
 *.iml
