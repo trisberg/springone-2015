@@ -6,8 +6,8 @@ spring:
     fsUri: hdfs://borneo:8020
     resourceManagerHost: borneo
 demo:
-  inputDir: /demo/hashtags/input
-  inputFileName: tweets.dat
   inputLocalDir: data
+  inputFileName: tweets.dat
+  inputDir: /demo/hashtags/input
   outputDir: /demo/hashtags/output
   sparkAssembly: hdfs:///app/spark/spark-assembly-1.5.0-hadoop2.6.0.jar
