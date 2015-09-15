@@ -14,7 +14,7 @@ import org.springframework.data.hadoop.store.strategy.naming.StaticFileNamingStr
 import org.springframework.data.hadoop.store.strategy.naming.UuidFileNamingStrategy;
 
 @Configuration
-public class BootIngestConfiguration {
+public class IngestConfiguration {
 
 	@Value("${tweets.basePath}")
 	private String basePath;

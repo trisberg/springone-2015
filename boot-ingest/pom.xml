@@ -38,12 +38,6 @@
 			<artifactId>spring-data-hadoop-store</artifactId>
 			<version>2.3.0.M2</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 	
 	<build>

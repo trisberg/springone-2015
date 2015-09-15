@@ -16,7 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Component
-public class BootIngestProcessor {
+public class IngestProcessor {
 	
 	@Value("${tweets.fileName}")
 	private String fileName;
@@ -30,7 +30,7 @@ public class BootIngestProcessor {
         try(BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line = br.readLine();
             while (line != null) {
-            	processLine(line);
+            	writer.write(processLine(line));
                 line = br.readLine();
             }
 			writer.close();
@@ -39,7 +39,7 @@ public class BootIngestProcessor {
 		}
 	}
 	
-	private void processLine(String line) throws IOException {
+	private String processLine(String line) throws IOException {
 		Map<String, Object> tweet = 
 				jsonMapper.readValue(line, new TypeReference<HashMap<String,  Object>>(){});
 		@SuppressWarnings("unchecked")
@@ -50,6 +50,6 @@ public class BootIngestProcessor {
 		csvData.append("," + tweet.get("created_at"));
 		csvData.append("," + tweet.get("text").toString().replace(",", "\\,").replace('\n', ' '));
 		csvData.append("," + user.get("followers_count"));
-		writer.write(csvData.toString());
+		return csvData.toString();
 	}
 }

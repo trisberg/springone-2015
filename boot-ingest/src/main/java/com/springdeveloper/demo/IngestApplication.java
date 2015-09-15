@@ -6,18 +6,18 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BootIngestApplication implements CommandLineRunner {
+public class IngestApplication implements CommandLineRunner {
 
 	@Autowired
-	private BootIngestProcessor bootIngestProcessor;
+	private IngestProcessor ingestProcessor;
 	
     public static void main(String[] args) {
-        SpringApplication.run(BootIngestApplication.class, args);
+        SpringApplication.run(IngestApplication.class, args);
     }
 
 	@Override
 	public void run(String... arg0) throws Exception {
         System.out.println("*** RUNNING ...");
-		bootIngestProcessor.process();
+		ingestProcessor.process();
 	}
 }
