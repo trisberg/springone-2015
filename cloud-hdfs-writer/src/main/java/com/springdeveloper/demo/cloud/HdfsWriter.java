@@ -25,7 +25,7 @@ import org.springframework.integration.annotation.ServiceActivator;
 import java.io.IOException;
 
 /**
- * A spring-cloud-stream sink that can be used to insert data into HDFS.
+ * A spring-cloud-stream sink module that can be used to write data into HDFS.
  *
  * @author Thomas Risberg
  */
@@ -40,7 +40,7 @@ public class HdfsWriter {
 	}
 
 	@ServiceActivator(inputChannel=Sink.INPUT)
-	public void hdfsSink(Object payload) {
+	public void writeData(Object payload) {
 		try {
 			dataStoreWriter.write(payload.toString());
 		} catch (IOException e) {

@@ -57,7 +57,8 @@ public class BatchHive2Configuration {
 
 	@Autowired
     private StepBuilderFactory steps;
-	
+
+	// Job definition
 	@Bean
 	Job tweetInfluencers(JobBuilderFactory jobs, Step hiveInfluencers, Step exportInfluencers, Step results) throws Exception {
 	    return jobs.get("TweetInfluencers")
@@ -68,25 +69,23 @@ public class BatchHive2Configuration {
 	}
 	 
 	@Bean
+	@Primary
+	DataSource batchDataSource() {
+		return new EmbeddedDatabaseBuilder()
+				.setName("jobs")
+				.build();
+	}
+
+	@Bean
+	BatchConfigurer batchConfigurer(DataSource dataSource) {
+		return new DefaultBatchConfigurer(dataSource);
+	}
+
+	// Step 1 - Hive Influencers
+	@Bean
     Step hiveInfluencers(Tasklet hiveInfluencersTasklet) throws Exception {
 		return steps.get("hiveInfluencers")
     		.tasklet(hiveInfluencersTasklet)
-            .build();
-    }
-
-	@Bean
-    Step exportInfluencers(ItemReader<Map<String, Object>> hdfsFileReader, ItemWriter<Map<String, Object>> jdbcWriter) throws Exception {
-		return steps.get("exportInfluencers")
-    		.<Map<String, Object>, Map<String, Object>> chunk(100)
-    		.reader(hdfsFileReader)
-    		.writer(jdbcWriter)
-            .build();
-    }
-	
-	@Bean
-    Step results(Tasklet resultsTasklet) throws Exception {
-		return steps.get("results")
-    		.tasklet(resultsTasklet)
             .build();
     }
 
@@ -99,22 +98,6 @@ public class BatchHive2Configuration {
 	}
 
 	@Bean
-	Tasklet resultsTasklet(@Qualifier("exportDataSource") final DataSource exportDataSource) {
-		return new Tasklet() {
-			@Override
-			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-				JdbcTemplate jdbcTemplate = new JdbcTemplate(exportDataSource);
-				System.out.println("Results:");
-				List<Map<String, Object>> results = jdbcTemplate.queryForList("select * from twitter_influencers");
-				for (Map<String, Object> r : results) {
-					System.out.println(" " + r);
-				}
-				return RepeatStatus.FINISHED;
-			}
-		};
-	}
-	
-	@Bean
 	Collection<HiveScript> hiveScripts() {
 		List<HiveScript> hiveScripts = new ArrayList<>();
 		hiveScripts.add(new HiveScript(new ClassPathResource("initTweets.hql")));
@@ -122,6 +105,29 @@ public class BatchHive2Configuration {
 		return hiveScripts;
 	}
 
+	@Bean
+	DataSource hiveDataSource() {
+		return new SimpleDriverDataSource(new HiveDriver(), hiveUrl);
+	}
+	
+	@Bean
+	HiveClientFactory hiveClientFactory(@Qualifier("hiveDataSource") DataSource hiveDataSource) throws Exception {
+		HiveClientFactoryBean hiveClientFactoryBean = new HiveClientFactoryBean();
+		hiveClientFactoryBean.setHiveDataSource(hiveDataSource);
+		hiveClientFactoryBean.afterPropertiesSet();
+		return hiveClientFactoryBean.getObject();
+	}
+
+	// Step 2 - Export Influencers to Relational DB
+	@Bean
+    Step exportInfluencers(ItemReader<Map<String, Object>> hdfsFileReader, ItemWriter<Map<String, Object>> jdbcWriter) throws Exception {
+		return steps.get("exportInfluencers")
+    		.<Map<String, Object>, Map<String, Object>> chunk(100)
+    		.reader(hdfsFileReader)
+    		.writer(jdbcWriter)
+            .build();
+    }
+	
 	@Bean
 	@StepScope
 	ItemReader<Map<String, Object>> hdfsFileReader(HdfsResourceLoader resourceLoader, LineMapper<Map<String, Object>> lineMapper) throws IOException {
@@ -165,32 +171,6 @@ public class BatchHive2Configuration {
 	}
 
 	@Bean
-	DataSource hiveDataSource() {
-		return new SimpleDriverDataSource(new HiveDriver(), hiveUrl);
-	}
-	
-	@Bean
-	HiveClientFactory hiveClientFactory(@Qualifier("hiveDataSource") DataSource hiveDataSource) throws Exception {
-		HiveClientFactoryBean hiveClientFactoryBean = new HiveClientFactoryBean();
-		hiveClientFactoryBean.setHiveDataSource(hiveDataSource);
-		hiveClientFactoryBean.afterPropertiesSet();
-		return hiveClientFactoryBean.getObject();
-	}
-
-	@Bean
-	BatchConfigurer batchConfigurer(DataSource dataSource) {
-		return new DefaultBatchConfigurer(dataSource);
-	}
-	
-	@Bean
-	@Primary
-	DataSource batchDataSource() {
-		return new EmbeddedDatabaseBuilder()
-				.setName("jobs")
-				.build();
-	}
-
-	@Bean
 	public DataSourceInitializer exportDataSourceInitializer(@Qualifier("exportDataSource") DataSource exportDataSource) {
 		ResourceDatabasePopulator resourceDatabasePopulator = new ResourceDatabasePopulator();
 		resourceDatabasePopulator.addScript(new ClassPathResource("influencers-schema.sql"));
@@ -206,4 +186,27 @@ public class BatchHive2Configuration {
 	    return DataSourceBuilder.create().build();
 	}
 	
+	// Step 3 - Show Results
+	@Bean
+    Step results(Tasklet resultsTasklet) throws Exception {
+		return steps.get("results")
+    		.tasklet(resultsTasklet)
+            .build();
+    }
+
+	@Bean
+	Tasklet resultsTasklet(@Qualifier("exportDataSource") final DataSource exportDataSource) {
+		return new Tasklet() {
+			@Override
+			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+				JdbcTemplate jdbcTemplate = new JdbcTemplate(exportDataSource);
+				System.out.println("Results:");
+				List<Map<String, Object>> results = jdbcTemplate.queryForList("select * from twitter_influencers");
+				for (Map<String, Object> r : results) {
+					System.out.println(" " + r);
+				}
+				return RepeatStatus.FINISHED;
+			}
+		};
+	}
 }

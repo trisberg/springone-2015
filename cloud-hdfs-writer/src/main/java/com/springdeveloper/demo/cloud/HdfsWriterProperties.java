@@ -16,7 +16,6 @@
 
 package com.springdeveloper.demo.cloud;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -35,8 +34,7 @@ public class HdfsWriterProperties {
 	/**
 	 * the base filename to use for the created files
 	 */
-	@Value("${spring.application.name:data}")
-	private String fileName;
+	private String fileName = "data";
 
 	/**
 	 * the base filename extension to use for the created files
@@ -47,16 +45,6 @@ public class HdfsWriterProperties {
 	 * threshold in bytes when file will be automatically rolled over.
 	 */
 	private int rollover = 1000000000;
-
-	/**
-	 * inactivity timeout in ms after which file will be automatically closed
-	 */
-	private long idleTimeout = 0L;
-
-	/**
-	 * timeout in ms, regardless of activity, after which file will be automatically closed
-	 */
-	private long closeTimeout = 0L;
 
 	public String getDirectory() {
 		return directory;
@@ -88,22 +76,6 @@ public class HdfsWriterProperties {
 
 	public void setRollover(int rollover) {
 		this.rollover = rollover;
-	}
-
-	public long getIdleTimeout() {
-		return idleTimeout;
-	}
-
-	public void setIdleTimeout(long idleTimeout) {
-		this.idleTimeout = idleTimeout;
-	}
-
-	public long getCloseTimeout() {
-		return closeTimeout;
-	}
-
-	public void setCloseTimeout(long closeTimeout) {
-		this.closeTimeout = closeTimeout;
 	}
 
 }

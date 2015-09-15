@@ -25,6 +25,7 @@ import org.springframework.data.hadoop.store.DataStoreWriter;
 import org.springframework.data.hadoop.store.output.TextFileWriter;
 import org.springframework.data.hadoop.store.strategy.naming.ChainedFileNamingStrategy;
 import org.springframework.data.hadoop.store.strategy.naming.FileNamingStrategy;
+import org.springframework.data.hadoop.store.strategy.naming.RollingFileNamingStrategy;
 import org.springframework.data.hadoop.store.strategy.naming.StaticFileNamingStrategy;
 import org.springframework.data.hadoop.store.strategy.naming.UuidFileNamingStrategy;
 import org.springframework.data.hadoop.store.strategy.rollover.RolloverStrategy;
@@ -51,10 +52,9 @@ public class HdfsWriterConfiguration {
 				Arrays.asList(new FileNamingStrategy[]{
 						new StaticFileNamingStrategy(properties.getFileName()),
 						new UuidFileNamingStrategy(),
+						new RollingFileNamingStrategy(),
 						new StaticFileNamingStrategy(properties.getFileExtension(), ".")}));
 		writer.setFileNamingStrategy(namingStrategy);
-		writer.setIdleTimeout(properties.getIdleTimeout());
-		writer.setCloseTimeout(properties.getCloseTimeout());
 		RolloverStrategy rolloverStrategy = new SizeRolloverStrategy(properties.getRollover());
 		writer.setRolloverStrategy(rolloverStrategy);
 		return writer;
