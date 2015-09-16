@@ -41,6 +41,7 @@ public class SparkYarnConfiguration {
 	@Value("${demo.sparkAssembly}")
 	String sparkAssembly;
 	
+	// Job definition
 	@Bean
 	Job tweetInfluencers(JobBuilderFactory jobs, Step initScript, Step sparkTopHashtags) throws Exception {
 	    return jobs.get("TweetTopHashtags")
@@ -49,17 +50,11 @@ public class SparkYarnConfiguration {
 	    		.build();
 	}
 	 
+	// Step 1 - Init Script
 	@Bean
     Step initScript(StepBuilderFactory steps, Tasklet scriptTasklet) throws Exception {
 		return steps.get("initScript")
     		.tasklet(scriptTasklet)
-            .build();
-    }
-
-	@Bean
-    Step sparkTopHashtags(StepBuilderFactory steps, Tasklet sparkTopHashtagsTasklet) throws Exception {
-		return steps.get("sparkTopHashtags")
-    		.tasklet(sparkTopHashtagsTasklet)
             .build();
     }
 
@@ -84,6 +79,14 @@ public class SparkYarnConfiguration {
 		scriptRunner.setScriptSource(script);
 		return scriptRunner;
 	}
+
+	// Step 2 - Spark Top Hashtags
+	@Bean
+    Step sparkTopHashtags(StepBuilderFactory steps, Tasklet sparkTopHashtagsTasklet) throws Exception {
+		return steps.get("sparkTopHashtags")
+    		.tasklet(sparkTopHashtagsTasklet)
+            .build();
+    }
 
 	@Bean
 	SparkYarnTasklet sparkTopHashtagsTasklet() throws Exception {
