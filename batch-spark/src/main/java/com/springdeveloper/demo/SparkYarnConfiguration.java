@@ -43,7 +43,7 @@ public class SparkYarnConfiguration {
 	
 	// Job definition
 	@Bean
-	Job tweetInfluencers(JobBuilderFactory jobs, Step initScript, Step sparkTopHashtags) throws Exception {
+	Job tweetHashtags(JobBuilderFactory jobs, Step initScript, Step sparkTopHashtags) throws Exception {
 	    return jobs.get("TweetTopHashtags")
 	    		.start(initScript)
 	    		.next(sparkTopHashtags)
