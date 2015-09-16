@@ -8,4 +8,8 @@ Session:
 
 
 Demos:
-[boot-ingest](boot-ingest)
+
+* [boot-ingest](boot-ingest) Spring Boot app for HDFS ingestion
+* [batch-hive2](batch-hive2) Spring Boot app for running HiveServer2 batch tasklet
+* [batch-spark](batch-spark) Spring Boot app for running Spark on YARN batch tasklet
+* [cloud-hdfs-writer](cloud-hdfs-writer) Spring Boot app for ingesting stream data to HDFS file. Stream is created using Spring Cloud Stream project.
